@@ -205,7 +205,9 @@ static int tfmxtest(unsigned char *buf, int filesize, char *pre)
 
 void check_md5_and_headers(char *mfile)
 {
-	EVP_MD_CTX mdctx;
+	EVP_MD_CTX *mdctx;
+  mdctx = EVP_MD_CTX_new();
+
 	const EVP_MD *md;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
 	int md_len;
@@ -298,9 +300,9 @@ void check_md5_and_headers(char *mfile)
 		printf("Unknown message digest MD5");
 		exit(1);
 	}
-	EVP_DigestInit(&mdctx, md);
-	EVP_DigestUpdate(&mdctx, fdat, size);
-	EVP_DigestFinal(&mdctx, md_value, &md_len);
+	EVP_DigestInit(mdctx, md);
+	EVP_DigestUpdate(mdctx, fdat, size);
+	EVP_DigestFinal(mdctx, md_value, &md_len);
 	/* compare md5 sums */
 	for (mc=0; mc<16; mc++)
 	{
@@ -355,6 +357,9 @@ May cause crashes/hangups on big-endian CPUs!\n");
 
 	/* free buffer */
 	free(fdat);
+
+  EVP_MD_CTX_free(mdctx);
+
 	return;
 }
 
